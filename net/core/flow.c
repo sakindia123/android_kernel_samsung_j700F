@@ -465,6 +465,7 @@ static int __init flow_cache_init(struct flow_cache *fc)
 	};
 	register_hotcpu_notifier(&fc->hotcpu_notifier);
 
+	put_online_cpus();
 	setup_timer(&fc->rnd_timer, flow_cache_new_hashrnd,
 		    (unsigned long) fc);
 	fc->rnd_timer.expires = jiffies + FLOW_HASH_RND_PERIOD;
