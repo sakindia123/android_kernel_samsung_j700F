@@ -1276,7 +1276,7 @@ static int check_unsafe_exec(struct linux_binprm *bprm)
 
 static void bprm_fill_uid(struct linux_binprm *bprm)
 {
-	struct inode *inode;
+struct inode *inode;
 	unsigned int mode;
 	kuid_t uid;
 	kgid_t gid;
@@ -1285,10 +1285,10 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
 	bprm->cred->euid = current_euid();
 	bprm->cred->egid = current_egid();
 
-	if (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID)
+if (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID)
 		return;
 
-	if (current->no_new_privs)
+if (task_no_new_privs(current))
 		return;
 
 	inode = file_inode(bprm->file);
@@ -1319,16 +1319,19 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
 		bprm->per_clear |= PER_CLEAR_ON_SETID;
 		bprm->cred->egid = gid;
 	}
+
 }
 
 /* 
- * Fill the binprm structure from the inode. 
- * Check permissions, then read the first 128 (BINPRM_BUF_SIZE) bytes
- *
- * This may be called multiple times for binary chains (scripts for example).
- */
++ * Fill the binprm structure from the inode. 
++ * Check permissions, then read the first 128 (BINPRM_BUF_SIZE) bytes
++ *
++ * This may be called multiple times for binary chains (scripts for example).
++ */
 int prepare_binprm(struct linux_binprm *bprm)
 {
+        int retval;
+
 	bprm_fill_uid(bprm);
 
 	/* fill in binprm security blob */
