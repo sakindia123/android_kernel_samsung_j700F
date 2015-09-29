@@ -529,8 +529,10 @@ static int c_show(struct seq_file *m, void *v)
 {
 	int i;
 
-	for_each_online_cpu(i) {
+	seq_printf(m, "Processor\t: %s rev %d (%s)\n",
+		   cpu_name, read_cpuid_id() & 15, ELF_PLATFORM);
 
+	for_each_online_cpu(i) {
 		/*
 		 * glibc reads /proc/cpuinfo to determine the number of
 		 * online processors, looking for lines beginning with
@@ -542,7 +544,7 @@ static int c_show(struct seq_file *m, void *v)
 	}
 
 	/* dump out the processor features */
-		seq_puts(m, "Features\t:");
+	seq_puts(m, "Features\t: ");
 
 	for (i = 0; hwcap_str[i]; i++)
 		if (elf_hwcap & (1 << i))
@@ -552,7 +554,7 @@ static int c_show(struct seq_file *m, void *v)
 		/* Print out the non-optional ARMv8 HW capabilities */
 		seq_printf(m, "wp half thumb fastmult vfp edsp neon vfpv3 tlsi ");
 		seq_printf(m, "vfpv4 idiva idivt ");
-		}
+	}
 #endif
 
 	seq_printf(m, "\nCPU implementer\t: 0x%02x\n", read_cpuid_id() >> 24);
@@ -565,7 +567,7 @@ static int c_show(struct seq_file *m, void *v)
 	seq_printf(m, "CPU part\t: 0x%03x\n", (read_cpuid_id() >> 4) & 0xfff);
 	seq_printf(m, "CPU revision\t: %d\n", read_cpuid_id() & 15);
 
-		seq_puts(m, "\n");
+	seq_puts(m, "\n");
 
 	seq_printf(m, "Hardware\t: %s\n", machine_name);
 
