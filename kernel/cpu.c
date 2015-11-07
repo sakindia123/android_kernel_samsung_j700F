@@ -431,6 +431,9 @@ static int __cpuinit _cpu_up(unsigned int cpu, int tasks_frozen)
 	/* Now call notifier in preparation. */
 	cpu_notify(CPU_ONLINE | mod, hcpu);
 
+	/* Boost the onlined cpu */
+	cafactive_boost_ondemand(cpu, 500, false);
+
 out_notify:
 	if (ret != 0)
 		__cpu_notify(CPU_UP_CANCELED | mod, hcpu, nr_calls, NULL);
