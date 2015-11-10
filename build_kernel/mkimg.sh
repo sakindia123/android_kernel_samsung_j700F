@@ -1,10 +1,10 @@
 #!/bin/bash
 
 FIT=custom_defconfig
-DTS=/home/sarthak/j7/kernel/arch/arm64/boot/dts
-IMG=/home/sarthak/j7/kernel/arch/arm64/boot
-BK=/home/sarthak/j7/kernel/build_kernel
-OUT=/home/sarthak/j7/kernel/output
+DTS=/home/sarthak/j7/android_kernel_samsung_j700F/arch/arm64/boot/dts
+IMG=/home/sarthak/j7/android_kernel_samsung_j700F/arch/arm64/boot
+BK=/home/sarthak/j7/android_kernel_samsung_j700F/build_kernel
+OUT=/home/sarthak/j7/android_kernel_samsung_j700F/output
 DT=j7.dtb
 
 echo -n "Build dt.img......................................."
