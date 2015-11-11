@@ -585,25 +585,14 @@ wake_up:
 	complete(&isert_conn->conn_wait);
 }
 
-static int
+static void
 isert_disconnected_handler(struct rdma_cm_id *cma_id, bool disconnect)
 {
-	struct isert_conn *isert_conn;
-
-	if (!cma_id->qp) {
-		struct isert_np *isert_np = cma_id->context;
-
-		isert_np->np_cm_id = NULL;
-		return -1;
-	}
-
-	isert_conn = (struct isert_conn *)cma_id->context;
+	struct isert_conn *isert_conn = (struct isert_conn *)cma_id->context;
 
 	isert_conn->disconnect = disconnect;
 	INIT_WORK(&isert_conn->conn_logout_work, isert_disconnect_work);
 	schedule_work(&isert_conn->conn_logout_work);
-
-	return 0;
 }
 
 static int
@@ -618,9 +607,6 @@ isert_cma_handler(struct rdma_cm_id *cma_id, struct rdma_cm_event *event)
 	switch (event->event) {
 	case RDMA_CM_EVENT_CONNECT_REQUEST:
 		ret = isert_connect_request(cma_id, event);
-		if (ret)
-			pr_err("isert_cma_handler failed RDMA_CM_EVENT: 0x%08x %d\n",
-				event->event, ret);
 		break;
 	case RDMA_CM_EVENT_ESTABLISHED:
 		isert_connected_handler(cma_id);
@@ -630,12 +616,18 @@ isert_cma_handler(struct rdma_cm_id *cma_id, struct rdma_cm_event *event)
 	case RDMA_CM_EVENT_DEVICE_REMOVAL: /* FALLTHRU */
 		disconnect = true;
 	case RDMA_CM_EVENT_TIMEWAIT_EXIT:  /* FALLTHRU */
-		ret = isert_disconnected_handler(cma_id, disconnect);
+		isert_disconnected_handler(cma_id, disconnect);
 		break;
 	case RDMA_CM_EVENT_CONNECT_ERROR:
 	default:
 		pr_err("Unhandled RDMA CMA event: %d\n", event->event);
 		break;
+	}
+
+	if (ret != 0) {
+		pr_err("isert_cma_handler failed RDMA_CM_EVENT: 0x%08x %d\n",
+		       event->event, ret);
+		dump_stack();
 	}
 
 	return ret;
@@ -2241,8 +2233,7 @@ isert_free_np(struct iscsi_np *np)
 {
 	struct isert_np *isert_np = (struct isert_np *)np->np_context;
 
-	if (isert_np->np_cm_id)
-		rdma_destroy_id(isert_np->np_cm_id);
+	rdma_destroy_id(isert_np->np_cm_id);
 
 	np->np_context = NULL;
 	kfree(isert_np);

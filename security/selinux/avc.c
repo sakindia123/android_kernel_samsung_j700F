@@ -480,7 +480,7 @@ noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 	sad.ssid = ssid;
 	sad.tsid = tsid;
 	sad.audited = audited;
-	sad.denied = 0;
+	sad.denied = denied;
 	sad.result = result;
 
 	a->selinux_audit_data = &sad;
@@ -683,6 +683,11 @@ static noinline int avc_denied(u32 ssid, u32 tsid,
 			 unsigned flags,
 			 struct av_decision *avd)
 {
+	if (flags & AVC_STRICT)
+		return -EACCES;
+	if (selinux_enforcing && !(avd->flags & AVD_FLAGS_PERMISSIVE))
+		return -EACCES;
+
 	avc_update_node(AVC_CALLBACK_GRANT, requested, ssid,
 				tsid, tclass, avd->seqno);
 	return 0;
