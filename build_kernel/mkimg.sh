@@ -12,6 +12,7 @@ echo -n "Cleanup build environment.........................."
 rm -rf $BK/ramdisk.cpio.gz
 rm -rf $BK/Image*
 rm -rf $BK/boot*.img
+rm -rf $BK/output/boot.img
 rm -rf $IMG/Image
 rm -rf $DTS/.*.tmp
 rm -rf $DTS/.*.cmd
@@ -69,7 +70,11 @@ cd ..
 echo "Done"
 
 echo -n "Creating flashable zip............................."
-zip twrp_kernel.zip META-INF  boot.img busybox busybox.list
+cp boot.img output/
+cd output
+zip -r twrp_kernel.zip boot.img busybox busybox.list META-INF/com/google/android/update-binary META-INF/com/google/android/updater-script
+cp twrp_kernel.zip ../
+cd ../
 echo "Done"
 
 echo
