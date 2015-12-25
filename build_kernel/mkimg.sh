@@ -1,10 +1,10 @@
 #!/bin/bash
 
 FIT=custom_defconfig
-DTS=/home/sarthak/j7/android_kernel_samsung_j700F/arch/arm64/boot/dts
-IMG=/home/sarthak/j7/android_kernel_samsung_j700F/arch/arm64/boot
-BK=/home/sarthak/j7/android_kernel_samsung_j700F/build_kernel
-OUT=/home/sarthak/j7/android_kernel_samsung_j700F/output
+DTS=/home/sarthak/j7/kernel/arch/arm64/boot/dts
+IMG=/home/sarthak/j7/kernel/arch/arm64/boot
+BK=/home/sarthak/j7/kernel/build_kernel
+OUT=/home/sarthak/j7/kernel/output
 DT=j7.dtb
 
 # Cleanup old files from build environment
