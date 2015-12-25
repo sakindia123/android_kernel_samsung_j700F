@@ -423,23 +423,16 @@ on boot
     # level system server to be able to adjust the kernel OOM driver
     # parameters to match how it is managing things.
     write /proc/sys/vm/overcommit_memory 1
-    write /proc/sys/vm/min_free_order_shift 4
-    write /proc/sys/vm/user_reserve_kbytes 131072
+    write /proc/sys/vm/min_free_kbytes 32768
     chown root system /sys/module/lowmemorykiller/parameters/adj
     chmod 0220 /sys/module/lowmemorykiller/parameters/adj
-    chown root root /sys/module/lowmemorykiller/parameters/minfree
-    chmod 0660 /sys/module/lowmemorykiller/parameters/minfree
-    write /sys/module/lowmemorykiller/parameters/minfree 15360,18256,21160,24096,27000,32768
-    chown root root /sys/module/lowmemorykiller/parameters/vmpressure_file_min
-    chmod 0660 /sys/module/lowmemorykiller/parameters/vmpressure_file_min
-    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 40960
+    chown root system /sys/module/lowmemorykiller/parameters/minfree
     chmod 0220 /sys/module/lowmemorykiller/parameters/minfree
-    chown root system /sys/module/lowmemorykiller/parameters/nul
-    chmod 0220 /sys/module/lowmemorykiller/parameters/nul
 
     # Tweak background writeout
-    write /proc/sys/vm/dirty_expire_centisecs 3000
-    write /proc/sys/vm/dirty_background_ratio  5
+    write /proc/sys/vm/dirty_expire_centisecs 200
+    # for dirty_background_ratio, just use kernel default value
+    # write /proc/sys/vm/dirty_background_ratio  5
 
     # Permissions for System Server and daemons.
     chown radio system /sys/android_power/state
@@ -647,6 +640,11 @@ on property:vold.decrypt=trigger_shutdown_framework
     class_reset late_start
     class_reset main
 
+on property:selinux.reload_policy=1
+    chown system system /sys/fs/selinux/enforce
+    chown -R system system /sys/fs/selinux/booleans
+    chown system system /sys/fs/selinux/commit_pending_bools
+
 on property:sys.powerctl=*
     powerctl ${sys.powerctl}
 
@@ -685,6 +683,17 @@ service healthd /sbin/healthd
     critical
     seclabel u:r:healthd:s0
 
+#service healthd-charger /sbin/healthd -c
+#    class charger
+#    critical
+#    seclabel u:r:healthd:s0
+
+#start SEC_PRODUCT_FEATURE_COMMON_SUPPORT_SE_FOR_ANDROID
+# Reload SE Android Policy for MDM
+on property:persist.security.mdm.policy=1
+    setprop selinux.reload_policy 1
+#end SEC_PRODUCT_FEATURE_COMMON_SUPPORT_SE_FOR_ANDROID
+
 service console /system/bin/sh
     class core
     console
@@ -692,6 +701,7 @@ service console /system/bin/sh
     user shell
     group shell log
     seclabel u:r:shell:s0
+
 
 # ccm
   service ccm /system/bin/tlc_server
@@ -703,10 +713,32 @@ on property:persist.security.tlc.ccm=1
   start ccm
   setprop persist.security.tlc.ccm 0
 
+# SEC_SELINUX
+service auditd /system/bin/auditd -k
+    class main
+    seclabel u:r:auditd:s0
+    disabled
+    oneshot
+
 # SEC_LINUX DRS Service
 service drsd /system/bin/drsd
     class main
     socket drsd stream 600 system system
+
+service kap_enable /sbin/knox_changer -e
+    class main
+    disabled
+    oneshot
+
+service kap_disable /sbin/knox_changer -d
+    class main
+    disabled
+    oneshot
+
+on property:security.knox_kap_mode=true
+    start kap_enable
+on property:security.knox_kap_mode=false
+    start kap_disable
 
 # icd
 service icd /system/bin/icd
@@ -726,6 +758,7 @@ on property:selinux.sec.restorecon=1
 
 # SEC_SELINUX
 on property:init.svc.bootanim=stopped
+    start auditd
 
 # adbd is controlled via property triggers in init.<platform>.usb.rc
 service adbd /sbin/adbd --root_seclabel=u:r:su:s0
