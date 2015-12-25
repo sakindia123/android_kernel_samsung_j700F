@@ -72,8 +72,8 @@ echo "Done"
 echo -n "Creating flashable zip............................."
 cp boot.img output/
 cd output
-zip -r twrp_kernel.zip boot.img busybox busybox.list META-INF/com/google/android/update-binary META-INF/com/google/android/updater-script
-cp twrp_kernel.zip ../
+zip -r twrp_kernel.zip boot.img system/xbin/busybox META-INF/com/google/android/update-binary META-INF/com/google/android/updater-script
+mv twrp_kernel.zip ../
 cd ../
 echo "Done"
 
