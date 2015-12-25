@@ -377,13 +377,16 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 
 KBUILD_CFLAGS   := -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
+		   -fivopts -funswitch-loops -fpredictive-commoning \
+		   -Werror-implicit-function-declaration -funsafe-loop-optimizations \
 		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks \
-		   -fdiagnostics-show-option \
-                   -std=gnu89
+		   -fweb -ftree-loop-im -ftree-loop-ivcanon \
+		   -fno-delete-null-pointer-checks -fsingle-precision-constant \
+		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
+		   -fdiagnostics-show-option -std=gnu89 \
+                   -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize
 
-KBUILD_CFLAGS	+= -pipe -fno-pic -O2 -march=armv8-a+crc -mcpu=cortex-a57.cortex-a53 -mtune=cortex-a57.cortex-a53
+KBUILD_CFLAGS	+= -pipe -fno-pic -O2 -mcpu=cortex-a57.cortex-a53 -mtune=cortex-a57.cortex-a53
 # Other unnecessary warnings
 KBUILD_CFLAGS	+= -Wno-unused -Wno-maybe-uninitialized
 
@@ -584,7 +587,7 @@ endif # $(dot-config)
 all: vmlinux
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS	+= -O2
 else
 KBUILD_CFLAGS	+= -O2
 endif
