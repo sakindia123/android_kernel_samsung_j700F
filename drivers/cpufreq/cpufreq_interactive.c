@@ -798,37 +798,6 @@ err:
 	return ERR_PTR(err);
 }
 
-void interactive_boost_ondemand(int cpu, s64 miliseconds, bool static_switch)
-{
-	struct cpufreq_interactive_cpuinfo *pcpu = &per_cpu(cpuinfo, cpu);
-	struct cpufreq_interactive_tunables *tunables;
-
-	if(pcpu && pcpu->policy)
-		tunables = pcpu->policy->governor_data;
-	else
-		return;
-
-	if (!tunables)
-		return;
-
-	if (!miliseconds) {
-		 if (static_switch) {
-			trace_cpufreq_interactive_boost("on");
-			if (!tunables->boosted)
-				cpufreq_interactive_boost(pcpu->policy, tunables);
-		 } else {
-			tunables->boostpulse_endtime = ktime_to_us(ktime_get());
-			trace_cpufreq_interactive_unboost("off");
-		 }
-	} else {
-		 tunables->boostpulse_endtime = ktime_to_us(ktime_get()) +
-			(miliseconds * 1000);
-		 trace_cpufreq_interactive_boost("pulse");
-		 if (!tunables->boosted)
-			cpufreq_interactive_boost(pcpu->policy, tunables);
-	}
-}
-
 static ssize_t show_target_loads(
 	struct cpufreq_interactive_tunables *tunables,
 	char *buf)
