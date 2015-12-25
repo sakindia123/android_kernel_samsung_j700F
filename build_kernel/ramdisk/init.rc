@@ -306,6 +306,7 @@ on post-fs-data
     chmod 0660 /data/misc/wifi/wpa_supplicant.conf
     mkdir /data/local 0751 root root
     mkdir /data/misc/media 0700 media media
+    mkdir /data/misc/vpnclientd 0770 system system
 
     # icd
     check_icd
@@ -563,6 +564,7 @@ on boot
    chown system radio /sys/class/power_supply/battery/siop_level
    chown system radio /sys/class/power_supply/battery/wc_enable
    chown system radio /sys/class/power_supply/battery/update
+   chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/store_mode
    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/call
    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/video
    chown sdcard_rw sdcard_rw /sys/class/power_supply/battery/music
@@ -995,3 +997,13 @@ on property:persist.security.tlc.otp=1
 on property:init.svc.media=restarting
     check_icd
     start icd
+
+service vpnclientd /system/bin/vpnclientd
+    socket vpnclientd seqpacket 0600 system system
+    user system
+    group system net_admin inet net_raw
+    disabled
+on property:service.vpnclientd.enable=1
+    start vpnclientd
+on property:service.vpnclientd.enable=0
+    stop vpnclientd
