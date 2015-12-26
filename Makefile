@@ -193,7 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
-ARCH		?=arm64
+ARCH		?= arm64
 CROSS_COMPILE	?= /home/sarthak/j7/aarch64-linux-android-6.0-kernel/bin/aarch64-linux-android-
 
 # Architecture as present in compile.h
@@ -388,7 +388,7 @@ KBUILD_CFLAGS   := -DNDEBUG $(GRAPHITE) -w -Wstrict-prototypes -Wno-trigraphs \
 		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
 		   -fbranch-target-load-optimize -fsingle-precision-constant \
 		   -Werror -Wno-error=unused-variable -Wno-error=unused-function \
-		   -std=gnu89 -Wno-discarded-array-qualifiers -Wno-logical-not-parentheses -Wno-array-bounds -Wno-switch -Wno-unused-variable \
+		   -std=gnu89 -Wno-discarded-array-qualifiers -Wno-logical-not-parentheses -Wno-array-bounds -Wno-switch -Wno-unused-variable
 
 # Other unnecessary warnings
 KBUILD_CFLAGS	+= -Wno-unused -Wno-maybe-uninitialized
