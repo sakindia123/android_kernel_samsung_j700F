@@ -375,18 +375,17 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common \
+KBUILD_CFLAGS   := -DNDEBUG $(GRAPHITE) -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+		   -fno-strict-aliasing -fno-common -fgraphite-identity \
 		   -fivopts -funswitch-loops -fpredictive-commoning \
 		   -Werror-implicit-function-declaration -funsafe-loop-optimizations \
-		   -Wno-format-security \
+		   -Wno-format-security -pipe -fno-pic -O2 \
 		   -fweb -ftree-loop-im -ftree-loop-ivcanon \
 		   -fno-delete-null-pointer-checks -fsingle-precision-constant \
 		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
 		   -fdiagnostics-show-option -std=gnu89 \
                    -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize
 
-KBUILD_CFLAGS	+= -pipe -fno-pic -O2 -mcpu=cortex-a57.cortex-a53 -mtune=cortex-a57.cortex-a53
 # Other unnecessary warnings
 KBUILD_CFLAGS	+= -Wno-unused -Wno-maybe-uninitialized
 
