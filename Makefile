@@ -375,7 +375,7 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -DNDEBUG $(GRAPHITE) -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+KBUILD_CFLAGS   := -DNDEBUG -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common -fgraphite-identity \
 		   -fivopts -funswitch-loops -fpredictive-commoning \
 		   -Werror-implicit-function-declaration -funsafe-loop-optimizations \
