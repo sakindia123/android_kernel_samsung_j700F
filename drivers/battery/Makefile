@@ -33,5 +33,5 @@ obj-$(CONFIG_CHARGER_MAX77833)	+= max77833_charger.o
 obj-$(CONFIG_CHARGER_MAX77849)  += max77849_charger.o
 obj-$(CONFIG_CHARGER_SM5703)	+= sm5703_charger.o
 obj-$(CONFIG_CHARGER_RT5033)    += rt5033_charger.o
-
+obj-$(CONFIG_SEC_BATTERY_CHARGE_CONTROL) += charge_control.o
 
